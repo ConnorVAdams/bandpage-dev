@@ -32,7 +32,8 @@ function Authentication() {
                 toast.success(`Welcome ${action.payload.user.username}!`)
                 setToken(action.payload.jwt_token)
                 setRefreshToken(action.payload.refresh_token)
-                if (signUp) {
+                if (!action.payload.artist) {
+                    debugger
                     navigate(`${values.userType}s/new`)
                 } else {
                     navigate('/landing')

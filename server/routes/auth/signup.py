@@ -25,7 +25,7 @@ class Signup(Resource):
 
             db.session.add(user)
             db.session.commit()
-            
+            # import ipdb; ipdb.set_trace()
             jwt = create_access_token(identity=user.id)
             refresh_token = create_refresh_token(identity=user.id)
             serialized_user = user_schema.dump(user)

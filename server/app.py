@@ -75,15 +75,16 @@ api.add_resource(CheckToken, "/check")
 # api.add_resource(GetSpotifyToken, '/get_spotify_token')
 
 # TODO Further Restrict CORS after OAuth achieved
-    
-# def home():
-#     response = redirect('http://127.0.0.1:5555/callback')
-#     response.headers.add("Access-Control-Allow-Origin", "*")
-#     return response
+
+@app.route('/')
+def index():
+    response = redirect('http://localhost/callback')
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 @app.route('/spotify_api')
 def spotify_api():
-    response = redirect('http://127.0.0.1:5555/callback')
+    response = redirect('http://localhost/callback')
     response.headers.add("Access-Control-Allow-Origin", "*")
 
 @app.route('/authorize')
@@ -92,7 +93,7 @@ def authorize():
     import secrets
 
     client_id = app.config['SPOTIFY_CLIENT_ID']
-    redirect_uri = 'http://127.0.0.1:5555/callback'
+    redirect_uri = 'http://localhost/callback'
     scope = 'user-read-private user-read-email'
 
     # # Generate a random state value and store it in the session
@@ -109,7 +110,7 @@ def authorize():
     }
 
     authorization_url = 'https://accounts.spotify.com/authorize?' + urlencode(params)
-        
+
     response = redirect(authorization_url)
     response.headers.add("Access-Control-Allow-Origin", "*")
     # import ipdb; ipdb.set_trace()
@@ -121,7 +122,7 @@ def get_spotify_token():
     client_id = app.config['SPOTIFY_CLIENT_ID']
     client_secret= app.config['SPOTIFY_CLIENT_SECRET']
     token_url = 'https://accounts.spotify.com/api/token'
-    redirect_uri = 'http://127.0.0.1:5555/callback'
+    redirect_uri = 'http://localhost/callback'
 
     data = request.get_json()
     code = data.get('code')
@@ -149,8 +150,7 @@ def get_spotify_token():
             }
 
     post_response = requests.post(token_url,headers=headers,data=body)
-        
-
+    
     if post_response.status_code == 200:
         pr = post_response.json()
         if pr.get('refresh_token'):
@@ -159,22 +159,19 @@ def get_spotify_token():
                 'refresh_token': pr['refresh_token'],
                 'expires_in': pr['expires_in']
             }
+
         else:
             response_data = {
                 'access_token': pr['access_token'],
                 'refresh_token': refresh_token,
                 'expires_in': pr['expires_in']
             }
-    
+
         # import ipdb; ipdb.set_trace()
 
         return jsonify(response_data)
     else:
         return jsonify({'error': 'Failed to obtain access token.'}), 500    
-
-
-
-
 
 # # Register a callback function that loads a user from your database whenever
 # # a protected route is accessed. This should return any python object on a
@@ -185,16 +182,15 @@ def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
     return db.session.get(User, identity)
 
-
 # #! Global Error Handling
 @app.errorhandler(NotFound)  #! 404
 def handle_404(error):
     response = {"message": error.description}
     return response, error.code
-# 
-@app.route('/')
-def index(id=0):
-    return render_template("index.html")
+
+# @app.route('/')
+# def index(id=0):
+#     return render_template("index.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5555))

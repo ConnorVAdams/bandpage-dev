@@ -14,7 +14,7 @@ const UserLanding = () => {
     const handleEdit = () => {
         navigate('/artists/edit')
     }
-
+    
     if (acct) {
 
         const { 
@@ -32,11 +32,10 @@ const UserLanding = () => {
             username 
         } = user
 
-        // debugger
 
         return(
         <>
-            <div id={user_id}>
+            {/* <div id={user_id}>
                 <div id='Landing-info'>
 
                     <h5>Events I'm Attending:</h5>
@@ -118,7 +117,7 @@ const UserLanding = () => {
                                 ))}
                             </div>
                 </div>
-            </div>
+            </div> */}
         </>
         )
     }
